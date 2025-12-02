@@ -21,4 +21,6 @@
 -Сохраняет файлы в папку "ReceivedFiles"
 -Отправляет результат проверки клиенту
 
-<img width="1575" height="522" alt="image" src="https://github.com/user-attachments/assets/bc91bc48-a424-40a8-b3b3-08648c33ab3e" />
+<img width="585" height="489" alt="image" src="https://github.com/user-attachments/assets/11b87027-37b2-43c5-a66a-3c80394095b7" />
+
+<img width="626" height="479" alt="image" src="https://github.com/user-attachments/assets/aec83294-a24d-4b69-b1ec-8cde3f83c781" />
