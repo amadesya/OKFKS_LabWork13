@@ -1,0 +1,146 @@
+﻿<Window x:Class="FileHashTransfer.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:FileHashTransfer.Client.Converters"
+        mc:Ignorable="d"
+        Title="Клиент отправки файлов с хэш-суммой" 
+        Height="500" Width="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:BusyConverter x:Key="BusyConverter"/>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="20"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" 
+                   Text="Отправка файлов с проверкой целостности"
+                   FontSize="16" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <!-- Выбор файла -->
+        <TextBlock Grid.Row="1" Grid.Column="0" 
+                   Text="Путь к файлу:"/>
+
+        <TextBox Grid.Row="2" Grid.Column="0"
+                 Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Grid.Row="2" Grid.Column="1"
+                Content="Обзор..."
+                Command="{Binding BrowseCommand}"/>
+
+        <!-- Информация о файле -->
+        <GroupBox Grid.Row="3" Grid.ColumnSpan="2" 
+                  Header="Информация о файле" Margin="0,10,0,10">
+            <StackPanel>
+                <TextBlock Text="{Binding FileName, StringFormat='Имя файла: {0}'}" 
+                           FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding FileSize, StringFormat='Размер: {0} байт'}"/>
+                <TextBlock Text="{Binding Hash}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Salt}" TextWrapping="Wrap"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Настройки -->
+        <GroupBox Grid.Row="4" Grid.ColumnSpan="2" 
+                  Header="Настройки хэширования" Margin="0,0,0,10">
+            <StackPanel>
+                <CheckBox Content="Использовать криптографическую соль (требование 5.2)"
+                          IsChecked="{Binding UseSalt}"
+                          Margin="5"/>
+                <TextBlock Text="Использование соли повышает безопасность, но увеличивает размер передаваемых данных."
+                           FontStyle="Italic" Foreground="Gray" TextWrapping="Wrap"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Прогресс -->
+        <TextBlock Grid.Row="5" Grid.ColumnSpan="2"
+                   Text="{Binding Status}"
+                   FontWeight="SemiBold" Foreground="RoyalBlue"/>
+
+        <ProgressBar Grid.Row="6" Grid.ColumnSpan="2"
+                     Value="{Binding Progress}"
+                     Minimum="0" Maximum="100"/>
+
+        <!-- Кнопка отправки - уже есть, просто проверяем привязку -->
+        <Button Grid.Row="7" Grid.ColumnSpan="2"
+                Content="Отправить файл на сервер"
+                Command="{Binding SendCommand}"
+                IsEnabled="{Binding IsSending, Converter={StaticResource InverseBooleanConverter}}"
+                Background="RoyalBlue" Foreground="White"
+                FontWeight="Bold" Height="40"
+                FontSize="14"/>
+
+        <!-- Информационная панель -->
+        <Border Grid.Row="8" Grid.ColumnSpan="2" 
+                Background="LightGray" CornerRadius="5"
+                Margin="0,20,0,0" Padding="10">
+            <StackPanel>
+                <TextBlock Text="Инструкция:" FontWeight="Bold"/>
+                <TextBlock Text="1. Запустите серверное приложение" Margin="0,5,0,0"/>
+                <TextBlock Text="2. Выберите файл для отправки"/>
+                <TextBlock Text="3. Настройте параметры хэширования"/>
+                <TextBlock Text="4. Нажмите 'Отправить файл на сервер'"/>
+                <TextBlock Text="5. Сервер проверит целостность файла и отправит результат" 
+                           Margin="0,10,0,0" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Статус соединения -->
+        <StatusBar Grid.Row="9" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Сервер:"/>
+                    <Run Text="localhost:8080" FontWeight="SemiBold"/>
+                </TextBlock>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding IsSending, Converter={StaticResource BusyConverter}}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
